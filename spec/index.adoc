@@ -1722,10 +1722,6 @@ For curve `bls12_381`, the returned `public_key` is a G~2~ element in compressed
 This call requires that the vetKD feature is enabled, and the `canister_id` meets the requirement of a canister id.
 Otherwise it will be rejected.
 
-*TODOs*:
-
-* Add comment in MR asking if the `public_key` should be DER encoded, if maybe even the encoding we also expect of BLS public keys for certificates, namely DER encoding, following https://tools.ietf.org/html/rfc5480[RFC5480] using OID 1.3.6.1.4.1.44668.5.3.1.2.1 for the algorithm and 1.3.6.1.4.1.44668.5.3.2.1 for the curve should be used.
-
 [#ic-vetkd_encrypted_key]
 === IC method `vetkd_encrypted_key`
 
@@ -1760,10 +1756,6 @@ where
 This call requires that the vetKD feature is enabled and the caller is a canister.
 Otherwise it will be rejected.
 
-*TODOs*:
-
-* Specify further constraints on input data, if any (e.g., max size of `derivation_id`, etc.)
-
 [#ic-vetkd-key-usage]
 === Usage of vetKD keys
 
@@ -1784,8 +1776,6 @@ For curve `bls12_381`, this is possible because the decrypted vetKD key is actua
 ==== Asymmetric (identity-based) encryption
 
 The decrypted vetKD key can act as decryption key in a Boneh-Franklin identity-based encryption (BF-IBE) scheme for identity `derivation_path`, where the corresponding encryption key can be obtained by calling `vetkd_public_key` with the same `derivation_path` and `key_id`.
-
-See http://todo.com[TODO] for more details on how to perform asymmetric (identity-based) encryption.
 
 *TODOs*:
 

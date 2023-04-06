@@ -1727,28 +1727,29 @@ Otherwise it will be rejected.
 
 NOTE: The vetKD API is considered EXPERIMENTAL. Canister developers must be aware that the API may evolve in a non-backward-compatible way.
 
-This method returns a vetKD key, encrypted under a user-provided transport public_key, for the calling canister using the given derivation information consisting of `derivation_path` and `derivation_id`.
+This method returns a vetKD key, encrypted under a user-provided encryption public_key, for the calling canister using the given derivation information consisting of `public_key_derivation_path` and `derivation_id`.
 
-The `derivation_path` is a vector of variable length byte strings, containing at most 255 byte strings, and (together with the calling canister's ID) acts as domain separator to derive different public (verification) keys with the IC method `vetkd_public_key`.
-The `derivation_id` is used to derive a specific encrypted key.
+The `public_key_derivation_path` is a vector of variable length byte strings, containing at most 255 byte strings, and (together with the calling canister's ID) acts as domain separator to derive different public (verification) keys with the IC method `vetkd_public_key`.
+The `derivation_id` is used to derive different encrypted keys.
 The `key_id` is a struct specifying both a curve and a name.
 The availability of a particular `key_id` depends on the implementation.
 
 For curve `bls12_381`, the following holds:
 
-* The `transport_public_key` is a G~1~ element in compressed form in https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-bls12-381[BLS Signatures Draft RFC] encoding. Transport public keys are created by calculating g~1~^tsk^, where the transport secret key _tsk_ is chosen uniformly at random from Z~p~.
+* The `encryption_public_key` is a G~1~ element in compressed form in https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-bls12-381[BLS Signatures Draft RFC] encoding. Encryption public keys are created by calculating _epk = g~1~^esk^_, where the encryption secret key _esk_ is chosen uniformly at random from Z~p~.
 
 * The returned `encrypted_key` is the blob `E~1~ · E~2~ · E~3~`, where E~1~ and E~3~ are G~1~ elements, and E~2~ is a G~2~ element, all in compressed form in https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-bls12-381[BLS Signatures Draft RFC] encoding.
 +
-Before usage, the key should be verified by ensuring _e(E~1~, g~2~) = e(g~1~, E~2~)_, and _e(E~3~, g~2~) = e(tpk, E~2~) * e(H(dpk · `derivation_id`), dpk)_, where the derived public key _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
+The encrypted key can be verified by ensuring _e(E~1~, g~2~) == e(g~1~, E~2~)_, and _e(E~3~, g~2~) == e(epk, E~2~) * e(H(dpk · `derivation_id`), dpk)_, where the derived public key _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
 
-* The decrypted vetKD key _k_ is obtained by calculating E~3~ · E~1~^-tsk^, where the tsk ∈ Z~p~ is the transport secret key that was used to create the `transport_public_key`.
+* The decrypted vetKD key _k_ is obtained by calculating E~3~ * E~1~^-esk^, where the tsk ∈ Z~p~ is the encryption secret key that was used to generate the `encryption_public_key`.
 +
-Before usage, the key should be verified by ensuring _e(k, g~2~) = e(H(dpk · `derivation_id`), dpk)_, where _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
+Before usage, the key must be verified by ensuring _e(k, g~2~) == e(H(dpk · `derivation_id`), dpk)_, where _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
 
 where
 
-* g~1~, g~2~ are generators of G~1~, G~2~,
+* g~1~, g~2~ are generators of G~1~, G~2~, which are groups of prime order _p_,
+* * denotes the group operation in G~1~, G~2~, and G~T~,
 * e: `G~1~ x G~2~ -> G~T~` is the pairing (see https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-bls12-381[BLS Signatures Draft RFC, Appendix A]),
 * H hashes into G~1~ according to the https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature#name-message-augmentation-2[BLS12-381 message augmentation scheme ciphersuite in the BLS Signatures Draft RFC] (see also https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve#name-suites-for-bls12-381[Hashing to Elliptic Curves Draft RFC]),
 * `·` denotes concatenation

@@ -1744,7 +1744,8 @@ The encrypted key can be verified by ensuring _e(E~1~, g~2~) == e(g~1~, E~2~)_, 
 
 * The decrypted vetKD key _k_ is obtained by calculating E~3~ * E~1~^-esk^, where esk ∈ Z~p~ is the encryption secret key that was used to generate the `encryption_public_key`.
 +
-Before usage, the key must be verified by ensuring _e(k, g~2~) == e(H(dpk · `derivation_id`), dpk)_, where _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
+The key can be verified by ensuring _e(k, g~2~) == e(H(dpk · `derivation_id`), dpk)_, where _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
+Such verification protects against untrusted canisters returning invalid keys.
 
 where
 

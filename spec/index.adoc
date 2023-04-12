@@ -1742,7 +1742,7 @@ For curve `bls12_381`, the following holds:
 +
 The encrypted key can be verified by ensuring _e(E~1~, g~2~) == e(g~1~, E~2~)_, and _e(E~3~, g~2~) == e(epk, E~2~) * e(H(dpk · `derivation_id`), dpk)_, where the derived public key _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
 
-* The decrypted vetKD key _k_ is obtained by calculating E~3~ * E~1~^-esk^, where the tsk ∈ Z~p~ is the encryption secret key that was used to generate the `encryption_public_key`.
+* The decrypted vetKD key _k_ is obtained by calculating E~3~ * E~1~^-esk^, where esk ∈ Z~p~ is the encryption secret key that was used to generate the `encryption_public_key`.
 +
 Before usage, the key must be verified by ensuring _e(k, g~2~) == e(H(dpk · `derivation_id`), dpk)_, where _dpk_ is obtained by calling IC method `vetkd_public_key` with the same `derivation_path` and `key_id`, and the canister id of the caller.
 
